@@ -1,0 +1,246 @@
+---
+title: "SparsLV sur les données réelles"
+author: "OUATTARA Mory"
+date: "11/23/2021"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ClustVarLV)
+library(MASS)
+library(FactoMineR)
+library(writexl)
+# utilisation de la fonction SPC 
+library(PMA)
+library(clusterCrit)
+library(aricode)
+library(corrplot)
+library(diceR)
+library(readxl)
+library(readr)
+
+```
+
+```{r}
+FctClust=function(ResSAS,Pos1,Pos2){
+Res=NULL
+Dim=dim(ResSAS)
+Clust=rep(0,Dim[1])
+for(i in 1:length(Pos1)){
+  Clust=rep(0,Dim[1])
+  Unik=unique(ResSAS[,Pos1[i]])
+  Unik=Unik[-which(is.na(Unik))]
+  for(k in 1:(length(Unik)-1)){
+    deb=which(ResSAS[,Pos1[i]]==Unik[k])
+    fin=which(ResSAS[,Pos1[i]]==Unik[k+1])-1
+    PosClust=ResSAS[deb:fin,Pos2[i]]
+    Clust[PosClust]=Unik[k]
+  }
+  deb=which(ResSAS[,Pos1[i]]==Unik[length(Unik)])
+  fin=length(ResSAS[,1])
+  PosClust=ResSAS[deb:fin,Pos2[i]]
+  Clust[PosClust]=Unik[length(Unik)]
+  Res=cbind(Res,Clust)
+}
+return(Res)
+}
+
+
+DescPart=function(Part, Names){
+Freq=data.frame(table(Part))
+Dim=dim(Freq)
+NbMax=max(table(Part))
+DescCluster=data.frame(matrix(0,Dim[1],NbMax))
+for(i in 1:Dim[1]){
+  VAR=Names[Part==i]
+  for(j in 1:Freq$Freq[i]){
+    DescCluster[i,j]=VAR[j]
+  }
+}
+Freq=Freq$Freq
+Cluster=paste(rep("Cl"),1:Dim[1],sep="")
+DescCluster=cbind(Cluster,DescCluster,Freq)
+return(DescCluster)
+}
+
+col0 = colorRampPalette(c('white', 'cyan', '#007FFF', 'blue','#00007F'))
+
+col1 = colorRampPalette(c('#7F0000', 'red', '#FF7F00', 'yellow', 'white','cyan', '#007FFF', 'blue','#00007F'))
+
+col2 = colorRampPalette(c('#67001F', '#B2182B', '#D6604D', '#F4A582', '#FDDBC7', '#FFFFFF', '#D1E5F0', '#92C5DE','#4393C3', '#2166AC', '#053061'))
+
+col3 = colorRampPalette(c('red', 'white', 'blue'))
+
+col4 = colorRampPalette(c('#7F0000', 'red', '#FF7F00', 'yellow', '#7FFF7F','cyan', '#007FFF', 'blue', '#00007F'))
+
+wb = c('white', 'black')
+
+par(ask = TRUE)
+
+
+```
+
+
+# Importation des resultats de VarClus sur les 10 fold et Dtot
+
+```{r}
+#DataR <- read.delim("~/Documents/Recherches/Ndeye/GT_Ndeye_Saporta/Data/DataStimulus/DataR.txt")
+
+#ResVarClusFold <- read.delim("~/Documents/Recherches/Ndeye/GT_Ndeye_Saporta/Data/varclusStimulusOM4.txt", header=FALSE)
+
+#DonneesStimulusOM<- read_excel("~/Documents/Recherches/Ndeye/GT_Ndeye_Saporta/Data/DonneesStimulusOM.xlsx")
+
+# Data <- read.delim("~/Documents/Recherches/Ndeye/GT_Ndeye_Saporta/Resultats/Data.txt")
+DonneesSimulees <- read.csv("C:/Users/mlndao/OneDrive/asmbi/Resultats/DonneesSimulees.csv")
+
+# Data <- read_delim("DataStageRania/Data1.txt", delim = "\t", escape_double = FALSE,  trim_ws = TRUE)
+
+```
+
+## Statistique exploratoire
+
+```{r}
+
+# DonneesStimulusOM=Data
+Names=colnames(DonneesStimulusOM)=c(paste(rep("Ctl",14),1:14,sep=""),paste(rep("Ctx",14),1:14,sep=""),paste(rep("rcg",6),1:6,sep=""),paste(rep("rlt",12),1:12,sep=""),paste(rep("task",12),1:12,sep=""))
+
+```
+
+#   Groupe 1: Variables contrôle
+
+```{r}
+D1=DonneesStimulusOM[,c(1:14)]
+ResCor=round(cor(D1),2)
+#corrplot(ResCor)
+corrplot.mixed(ResCor, order = 'AOE',  tl.pos = 'd',col.lim = c(-1,1))
+#Faire la sortie sous forme de tableau plutôt que du text 
+ResCor
+
+```
+
+```{r}
+
+resPCA=PCA(D1,graph = F)
+plot.PCA(resPCA,choix ="var")
+
+
+```
+
+# Variables Contex
+
+```{r}
+D2=DonneesStimulusOM[,c(15:28)]
+ResCor=round(cor(D2),2)
+corrplot.mixed(ResCor, order = 'AOE', tl.pos = 'd',col.lim = c(-1,1))
+
+print(ResCor)
+
+resPCA=PCA(D2,graph = F)
+plot.PCA(resPCA,choix ="var")
+
+```
+
+## Variables Task
+
+```{r}
+
+D3=DonneesStimulusOM[,c(29:34)]
+
+ResCor=round(cor(D3),2)
+corrplot.mixed(ResCor, order = 'AOE',  tl.pos = 'd',col.lim = c(-1,1))
+
+resPCA=PCA(D3,graph = F)
+plot.PCA(resPCA,choix ="var")
+
+
+```
+
+## Variables relation
+
+```{r}
+
+D4=DonneesStimulusOM[,c(35:46)]
+
+ResCor=round(cor(D4),2)
+corrplot.mixed(ResCor, order = 'AOE', tl.pos = 'd',col.lim = c(-1,1))
+ResCor
+resPCA=PCA(D4,graph = F)
+plot.PCA(resPCA,choix ="var")
+
+
+```
+
+## Variables recognition
+
+```{r}
+# D5 = Data5
+D5=DonneesStimulusOM[,c(47:58)]
+ResCor=round(cor(D5),2)
+corrplot.mixed(ResCor, order = 'AOE', tl.pos = 'd',col.lim = c(-1,1))
+ResCor
+resPCA=PCA(D5,graph = F)
+plot.PCA(resPCA,choix ="var")
+
+
+```
+
+## 
+
+```{r}
+ResCor=round(cor(DonneesStimulusOM),2)
+
+corrplot.mixed(ResCor, order = 'AOE',  tl.pos = 'd',col.lim = c(-1,1))
+
+ResCor
+
+resPCA=PCA(DonneesStimulusOM,graph = F)
+ColVar=c( rep("blue",14),rep("red",14),rep("brown",6),rep("green",12),rep("black",12))
+plot.PCA(resPCA,col.var = ColVar,choix ="var")
+
+
+
+```
+```{r}
+library(reticulate)
+py_install("varclushi")
+```
+
+```{python}
+import numpy as np
+import pandas as pd
+from varclushi import VarClusHi
+
+demo1_df = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv', sep=';')
+demo1_df.drop('quality',axis=1,inplace=True)
+demo1_vc = VarClusHi(demo1_df,maxeigval2=1,maxclus=None)
+demo1_vc.varclus()
+
+demo1_df.columns
+demo1_vc.info
+
+```
+
+
+```{r, algorithmVarclus}
+# Fit varclus approach to get k cluster with a potential large number os small clusters
+# Packages disponible en python
+
+# Fit a clv initialization with K'+1 partition or CLV with K'=K
+# package ClustVarLV package disponible dans R
+
+res.clvkm.hc <- CLV_kmeans(X = pref, Xr = senso, method = "local", sX=TRUE,
+                        sXr = TRUE, clust=res.segext[[3]]$clusters[1,])
+
+# First PC or first sparse componenent
+# Prototypes :K most correlated variables with each latent variables
+
+```
+
+

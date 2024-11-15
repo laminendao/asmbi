@@ -1,0 +1,73 @@
+
+# Extra 
+
+to_ignore/
+*.venv/
+"etat de l'art"/
+Correction1/
+nouvel_environnement/
+
+# Fichiers de l'environnement virtuel
+venv/
+.env
+*.env
+
+# Fichiers de configuration IDE
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Fichiers de données
+data/
+*.csv
+*.tsv
+*.data
+*.dat
+*.log
+
+# Modèles et checkpoints
+models/
+checkpoints/
+*.h5
+*.hdf5
+*.pkl
+*.joblib
+data_cleaned/
+
+# Fichiers de sortie et notebooks
+outputs/
+results/
+*.ipynb_checkpoints
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs et fichiers temporaires
+logs/
+*.log
+*.out
+*.tmp
+
+# Rapports générés
+reports/
+*.pdf
+*.html
+
+# Configurations de déploiement
+Dockerfile
+*.dockerignore
+
+# Fichiers compressés et archives
+*.gz
+*.zip
+*.tar
+*.tar.gz
+
+# Cache de Python et fichiers de build
+*.egg-info/
+*.eggs/
+dist/
+build/
+
+
+
