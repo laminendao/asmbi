@@ -58,8 +58,8 @@ def prepare_data(file_name):
     return df_train, df_test, y_test
 
 
-# add operational condition to then normalize the data based on these operational conditions
-def add_operating_condition(df):
+# add operational condition to then normalize the data based on these operational conditions test
+def add_operating_condition(df): 
     df_op_cond = df.copy()
 
     df_op_cond['Altitude'] = df_op_cond['Altitude'].round()
@@ -357,7 +357,7 @@ def display(
 
     return fig, axarr
 
-def usegment(signal, n_bkps=2):
+def usegment(signal, n_bkps=0.1):
     """
     Compute the segmentation of the signal uniform
     """

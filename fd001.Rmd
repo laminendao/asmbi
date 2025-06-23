@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ClustVarLV)
 library(MASS)
 library(FactoMineR)
-library(writexl)
+# library(writexl)
 # utilisation de la fonction SPC 
 library(PMA)
 library(clusterCrit)
@@ -66,6 +66,9 @@ mat_cor[[i]] = cor(centers[,i], X[,g1$idx])
 }
 mat_cor
 ```
+```{r}
+summary(res.clvkm.hc)
+```
 
 ```{r}
 plot_var(res.clvkm.hc, beside = T, cex.lab = 1, label = T, v_symbol=T)
@@ -92,3 +95,8 @@ for (elm in mat_cor) {
 ```{r}
 res.clvkm.hc$tabres
 ```
+
+```{r}
+summary(res.clvkm.hc)
+```
+
