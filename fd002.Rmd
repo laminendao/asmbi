@@ -68,6 +68,10 @@ mat_cor
 ```
 
 ```{r}
+summary(res.clvkm.hc)
+```
+
+```{r}
 plot_var(res.clvkm.hc, beside = T, cex.lab = 1, label = T, v_symbol=T)
 ```
 

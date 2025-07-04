@@ -67,6 +67,12 @@ mat_cor[[i]] = cor(centers[,i], X[,g1$idx])
 mat_cor
 ```
 
+
+```{r, algorithmVarclus}
+summary(res.clvkm.hc)
+```
+
+
 ```{r}
 plot_var(res.clvkm.hc, beside = T, cex.lab = 1, label = T, v_symbol=T)
 ```
