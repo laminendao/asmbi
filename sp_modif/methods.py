@@ -168,7 +168,7 @@ def create_model(TW , remaining_):
     return model
 
 def compute_MAPE(y_true, y_hat):
-    mape = np.mean(np.abs((y_true - y_hat)/y_true))*100
+    mape = np.mean(np.abs((y_true - y_hat)/y_true))
     return mape
 
 def gen_labels(df, sequence_length, label):

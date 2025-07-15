@@ -397,7 +397,7 @@ def fidelity(model, explainer, samples, e, nstd=1.5, top_features=10, verbose=Tr
     # Y = model(samples)
     M_tot = samples.shape[1]*samples.shape[2]
     
-    return 1-np.mean(score_)/100, nsamples/M_tot
+    return np.mean(score_), nsamples/M_tot
 
 def instability(model, explainer, samples, e, verbose=True, L2X = False, rd=0, n_iter = 5):
     '''
@@ -424,7 +424,8 @@ def instability(model, explainer, samples, e, verbose=True, L2X = False, rd=0, n
 
         score_.append(np.mean(instab))
     
-    return (np.mean(score_) - np.min(score_))/(np.max(score_)-np.min(score_))
+    # return (np.mean(score_) - np.min(score_))/(np.max(score_)-np.min(score_))
+    return  np.mean(score_)
 #%%
 
 def consistency(explainer, samples, e, top_features=5, verbose=True, L2X = False, nb_iter = 5):
