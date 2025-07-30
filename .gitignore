@@ -27,7 +27,6 @@ venv/
 *.sublime-workspace
 
 # Fichiers de données
-data/
 *.csv
 *.tsv
 *.data
