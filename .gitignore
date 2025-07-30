@@ -28,6 +28,7 @@ data/
 *.json
 *.xml
 *.xlsx
+~$*
 # Fichiers de configuration et de logs
 config/
 *.cfg
@@ -84,6 +85,5 @@ Dockerfile
 *.eggs/
 dist/
 build/
-
 
 
