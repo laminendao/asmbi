@@ -209,7 +209,7 @@ def selectivity(model, explainer, samples, e_x, L2X = False, samples_chunk=1, ve
         e = np.abs(preds[1:] - preds[:-1]) / np.abs(preds[0] + 1e-12)
         e = np.cumsum(e)
         e = 1 - (e / (e.max() + 1e-12))
-        score = 1 - np.mean(e)
+        score = 1 - np.mean(e) # à essayer
         
         errors.append(score)
 #         print('ok')

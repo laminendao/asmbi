@@ -6,6 +6,7 @@ to_ignore/
 "etat de l'art"/
 Correction1/
 nouvel_environnement/
+idfc/
 
 # Fichiers de l'environnement virtuel
 venv/
@@ -24,6 +25,21 @@ data/
 *.data
 *.dat
 *.log
+*.json
+*.xml
+*.xlsx
+# Fichiers de configuration et de logs
+config/
+*.cfg
+*.ini
+# Fichiers de documentation
+docs/
+*.md
+# Fichiers de test
+tests/
+*.test
+# Fichiers de configuration de l'application
+app_config/
 
 # Modèles et checkpoints
 models/
