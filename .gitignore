@@ -12,6 +12,8 @@ review/
 "related works"/
 fig/
 Resultats/
+drawio/
+images/
 
 # Fichiers de l'environnement virtuel
 venv/
