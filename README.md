@@ -78,7 +78,7 @@ asmbi/
 
 ## 👩‍💻 Author
 
-Project developed by Ndao Mouhamadou Lamine, Genane Youness, Niang Ndeye and Saporta Gilbert  
+Project developed by Ndao ML, Youness Genane, Niang N. and Saporta G.  
 Institution / Lab: CEDRIC/CESI  
 Date: 2025
 
