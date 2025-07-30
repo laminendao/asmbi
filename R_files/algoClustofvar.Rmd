@@ -1,0 +1,173 @@
+---
+title: "Sparse divisive feature clustering"
+author: "Lamine & Ndeye & Genane & Gilbert"
+date: "2024-10-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Chargement de library
+
+```{r}
+library(ClustVarLV)
+library(MASS)
+library(FactoMineR)
+library(writexl)
+# utilisation de la fonction SPC 
+library(PMA)
+library(clusterCrit)
+library(aricode)
+library(corrplot)
+library(diceR)
+library(readxl)
+library(readr)
+library(dplyr)
+```
+
+```{r}
+library(reticulate)
+use_condaenv("C:\\ProgramData\\anaconda3\\envs\\tensorflow_env")
+
+```
+
+## Algorithm based on varclushi and ClustVarLV
+
+### First steps
+looking for the optimal K or K'
+
+```{python}
+import numpy as np
+import pandas as pd
+from varclushi import VarClusHi
+from sklearn.metrics import silhouette_score
+
+clusters = []
+
+demo1_df = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv', sep=';')
+X = demo1_df.drop('quality',axis=1)
+
+resclv = VarClusHi(X,maxeigval2=1,maxclus=None)
+resclv.varclus()
+init_partition  = resclv.rsquare.Cluster.values
+print(init_partition)
+
+
+init_partition = pd.DataFrame(init_partition)
+print(init_partition.shape)
+init_partition.columns = ["cluster"]
+init_partition.to_csv("init_partition/init_partition.csv")
+
+```
+```{python}
+import numpy as np
+import pandas as pd
+from varclushi import VarClusHi
+from sklearn.metrics import silhouette_score
+
+clusters = []
+
+X = pd.read_csv('data_cleaned/xtrain_clenead.csv', sep=',')
+# X = demo1_df.drop('quality',axis=1)
+X.drop('Unnamed: 0', axis = 1, inplace = True)
+
+resclv = VarClusHi(X,maxeigval2=1,maxclus=None)
+resclv.varclus()
+init_partition  = resclv.rsquare.Cluster.values
+print(init_partition)
+
+
+init_partition = pd.DataFrame(init_partition)
+print(init_partition.shape)
+init_partition.columns = ["cluster"]
+init_partition.to_csv("init_partition/init_partition.csv")
+
+```
+
+```{r}
+data(apples_sh)
+# 43 sensory attributes of 12 varieties of apple from southern hemisphere
+senso<-apples_sh$senso
+# Scores of liking given fy 60 consumers for each of the 12 varieties of apple
+pref<-apples_sh$pref
+```
+
+
+```{r, algorithmVarclus}
+# Fit varclus approach to get k cluster with a potential large number os small clusters
+# Packages disponible en python
+
+init_partition <- read_csv("init_partition/init_partition.csv")
+init_partition$cluster
+
+X <- read_csv("data_cleaned/X_cleaned.csv")
+X <- X[, -1]
+# Fit a clv initialization with K'+1 partition or CLV with K'=K
+# package ClustVarLV package disponible dans R
+
+res.clvkm.hc <- CLV_kmeans(X = X, method = "local", clust=init_partition$cluster, strategy="kplusone", rho = 0.5)
+plot_var(res.clvkm.hc, K=3, beside = T)
+summary(res.clvkm.hc)
+
+sizG0<-NULL
+for (r in seq(0,1,0.1)){
+  
+  res<-CLV_kmeans(X = X, method = "local", sX=TRUE, clust=init_partition$cluster, nstart=100, strategy="kplusone",rho=r)
+  sizG0<-c(sizG0,sum(get_partition(res)==0))
+  
+}
+res.clvkm.hc <- CLV_kmeans(X = X, method = "local", clust=init_partition$cluster, strategy="kplusone", rho = 0.3)
+plot(seq(0,1,0.1),sizG0,type="b",xlab="rho",ylab="# var in noise cluster")
+
+# First PC or first sparse componenent
+# Prototypes :K most correlated variables with each latent variables
+
+# Extract the group latent variables
+# Extract the group membership of each variable
+partition = get_partition(res.clvkm.hc,type="vector")
+# or 
+get_partition(res.clvkm.hc,type="matrix")
+# get_comp(res.clvkm.hc)
+
+table(partition)
+init_partition$cluster_final = partition
+init_partition$idx = colnames(X)
+
+mat_cor = list()
+centers <- res.clvkm.hc$comp
+for (i in 1:ncol(centers)) {
+  
+g1 = init_partition%>%filter(cluster_final==i)
+mat_cor[[i]] = cor(centers[,i], X[,g1$idx])
+
+}
+mat_cor
+```
+```{r}
+noise = init_partition%>%filter(cluster_final==0)
+noise$idx
+cor(X[,noise$idx])
+```
+
+
+```{r}
+
+for (elm in mat_cor) {
+  rownames(elm) = "Comp"
+  corrplot(elm, method = 'number')
+  
+}
+```
+
+```{r}
+for (elm in mat_cor) {
+  indice_max <- which.max(elm)
+  print(colnames(elm)[indice_max])
+  
+}
+```
+
+
+

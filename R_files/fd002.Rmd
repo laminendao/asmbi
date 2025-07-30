@@ -1,0 +1,98 @@
+---
+title: "features clustering"
+author: "Lamine & Ndeye & Genane & Gilbert"
+date: "2024-11-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ClustVarLV)
+library(MASS)
+library(FactoMineR)
+library(writexl)
+# utilisation de la fonction SPC 
+library(PMA)
+library(clusterCrit)
+library(aricode)
+library(corrplot)
+library(diceR)
+library(readxl)
+library(readr)
+library(dplyr)
+```
+
+
+```{r, algorithmVarclus}
+# Fit varclus approach to get k cluster with a potential large number os small clusters
+# Packages disponible en python
+
+init_partition <- read_csv("init_partition/init_partition002.csv")
+init_partition$cluster
+
+X <- read_csv("data_cleaned/X_cleaned002.csv")
+X <- X[, -1]
+# Fit a clv initialization with K'+1 partition or CLV with K'=K
+# package ClustVarLV package disponible dans R
+
+res.clvkm.hc <- CLV_kmeans(X = X, method = "local", clust=init_partition$cluster, strategy="kplusone", rho = 0.5)
+plot_var(res.clvkm.hc, beside = T, cex.lab = 1, label = T)
+summary(res.clvkm.hc)
+
+# First PC or first sparse componenent
+# Prototypes :K most correlated variables with each latent variables
+
+# Extract the group latent variables
+# Extract the group membership of each variable
+partition = get_partition(res.clvkm.hc,type="vector")
+# or 
+get_partition(res.clvkm.hc,type="matrix")
+# get_comp(res.clvkm.hc)
+
+table(partition)
+init_partition$cluster_final = partition
+init_partition$idx = colnames(X)
+
+mat_cor = list()
+centers <- res.clvkm.hc$comp
+for (i in 1:ncol(centers)) {
+  
+g1 = init_partition%>%filter(cluster_final==i)
+mat_cor[[i]] = cor(centers[,i], X[,g1$idx])
+
+}
+mat_cor
+```
+
+```{r}
+summary(res.clvkm.hc)
+```
+
+```{r}
+plot_var(res.clvkm.hc, beside = T, cex.lab = 1, label = T, v_symbol=T)
+```
+
+
+```{r}
+
+for (elm in mat_cor) {
+  rownames(elm) = "Comp"
+  corrplot(elm, method = 'number')
+  
+}
+```
+
+```{r}
+for (elm in mat_cor) {
+  indice_max <- which.max(elm)
+  print(colnames(elm)[indice_max])
+  
+}
+```
+
+```{r}
+res.clvkm.hc$tabres
+```
