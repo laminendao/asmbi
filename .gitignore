@@ -15,6 +15,9 @@ Resultats/
 drawio/
 images/
 ressources/
+retour/
+utils/methods_ln.py
+methods_ln.py
 
 # Fichiers de l'environnement virtuel
 venv/
