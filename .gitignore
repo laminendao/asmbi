@@ -45,7 +45,6 @@ config/
 *.ini
 # Fichiers de documentation
 docs/
-*.md
 # Fichiers de test
 tests/
 *.test
