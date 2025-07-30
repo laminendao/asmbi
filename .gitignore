@@ -51,7 +51,6 @@ tests/
 app_config/
 
 # Modèles et checkpoints
-models/
 checkpoints/
 *.h5
 *.hdf5
