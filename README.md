@@ -1,105 +1,118 @@
 [![GitHub Repo](https://img.shields.io/badge/GitHub-IDFC-blue?logo=github)](https://github.com/laminendao/asmbi)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 # Interpretable Divisive Feature Clustering (IDFC)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-This repository provides a Python implementation of the **Interpretable Divisive Feature Clustering (IDFC)** algorithm, as introduced in the paper:
+This repository provides the code used in the paper:
 
 > **Explainable Remaining Useful Life Prediction Using an Interpretable Divisive Feature Clustering**  
-> M. L. Ndao, G. Youness, N. Niang, G. Saporta – *Submitted 2024*  
-> [DOI and paper link coming soon]
+> Mouhamadou Lamine Ndao, Genane Youness, Ndeye Niang, Gilbert Saporta  
+> *Applied Stochastic Models in Business and Industry* (under revision)  
+> DOI: forthcoming
+
+The repository contains the **implementation, experiments, and evaluation pipeline** used to produce all numerical results reported in the paper.
 
 ---
 
 ## What is IDFC?
 
-**IDFC** is a dimensionality reduction algorithm that creates clusters of highly correlated features in an interpretable and explainable way. It is especially useful in **Explainable AI (XAI)** pipelines for Remaining Useful Life (RUL) prediction, where feature redundancy and multicollinearity limit interpretability.
+**Interpretable Divisive Feature Clustering (IDFC)** is an unsupervised dimensionality reduction method designed for **high-dimensional and highly correlated sensor data**, with a particular focus on **explainable Remaining Useful Life (RUL) prediction**.
 
-IDFC combines:
-- Hierarchical divisive clustering via **VARCLUS** (for initialization),
-- Optimization of internal coherence via **CLV** (Clustering of Variables),
-- A **K+1 noise cluster strategy** (Vigneau & Chen, 2016) to isolate atypical variables,
-- Final selection of **real, interpretable features**, not latent ones.
+Unlike classical dimensionality reduction methods based on latent components (e.g. PCA), IDFC:
+- clusters **original input features**,
+- selects **real and physically interpretable sensors** as cluster representatives,
+- explicitly identifies **atypical features** that do not conform to dominant correlation structures.
+
+IDFC is specifically designed to improve the **reliability of post-hoc explainability methods**, such as SHAP, in the presence of multicollinearity.
 
 ---
 
-## Project structure
+## Methodological overview
+
+IDFC combines ideas from existing feature clustering approaches:
+
+- **VARCLUS** (divisive hierarchical clustering) for initialization,
+- **CLV (Clustering of Variables)** for refinement of feature groups,
+- a **K+1 strategy** (Vigneau, 2016) to isolate atypical features,
+- selection of one **representative original feature per cluster**, instead of latent components.
+
+This structure allows dimensionality reduction while preserving semantic meaning and interpretability.
+
+---
+
+## Repository structure
 
 ```
 asmbi/
-├── Rfiles/                 # Rfiles for CLV function
-├── data/                   # CMAPSS dataset
-├── stability_folder/       # for stability metrics
-├── utils/                  # Scoring, correlation, diagnostics functions
-└── notebooks/              # notebooks Jupyter 
+├── Rfiles/                 # R implementations of CLV-related procedures
+├── data/                   # NASA C-MAPSS datasets
+├── utils/                  # preprocessing, scoring, and helper functions
+├── stability_folder/       # computation of stability metrics
+└── notebooks/              # Jupyter notebooks for experiments and figures
 ```
 
 ---
 
-## Features
+## What this repository contains
 
-- No need to predefine the number of clusters (VARCLUS-based)
-- Isolates atypical/noise variables (K+1 strategy)
-- Returns **interpretable features**, not abstract latent dimensions
-- Robust to multicollinearity and redundancy
-- Compatible with **SHAP** and other post-hoc XAI tools
-- Lightweight, modular and reproducible
+✔ IDFC feature clustering and selection  
+✔ Preprocessing pipeline (normalization, exponential smoothing, sliding windows)  
+✔ LSTM-based RUL prediction model  
+✔ SHAP-based explainability analysis  
+✔ Evaluation of explanation quality using:
+- coherence
+- stability
+- acumen
+- computation time  
 
-- LSTM-based RUL prediction
-- Preprocessing with operational conditions + exponential smoothing
-- Explainability methods:
-  - SHAP (KernelSHAP)
-  - LIME
-  - L2X
-- Evaluation metrics:
-  - Fidelity
-  - Coherence
-  - Identity
-  - Separability
-  - Selectivity
-  - Acumen
-  - Velmurugan Stability
-  - Instability
+⚠️ This repository **does not include** LIME or L2X experiments, which are **not part of the paper**.
+
+---
+
+## Dataset
+
+The experiments are conducted on the **NASA C-MAPSS** dataset for turbofan engine prognostics:
+- FD001, FD002, FD003, FD004 subsets
+- multivariate time series with multiple operating conditions and fault modes
+
+The dataset is publicly available and included here for reproducibility.
 
 ---
 
 ## References
 
-- Ndao et al. (2024) – Explainable Remaining Useful Life Prediction Using IDFC *(Preprint pending)*
-- Vigneau & Chen (2016) – [Dimensionality Reduction by Clustering of Variables While Setting Aside Atypical Variables](https://doi.org/10.1285/i20705948v9n1p134)
-- Sarle (1990) – The VARCLUS Procedure (SAS Institute)
-- [LIME](https://github.com/marcotcr/lime)
-- [SHAP](https://github.com/slundberg/shap)
-- [L2X paper](https://arxiv.org/abs/1810.00158)
-- [C-MAPSS Dataset](https://www.nasa.gov/content/prognostics-center-of-excellence-data-set-repository)
+- Ndao M.L. et al. – *Explainable Remaining Useful Life Prediction Using an Interpretable Divisive Feature Clustering* (under review)
+- Vigneau E. (2016). *Dimensionality reduction by clustering of variables while setting aside atypical variables*
+- Vigneau & Qannari (2003). *Clustering of variables around latent components*
+- Lundberg & Lee (2017). *A Unified Approach to Interpreting Model Predictions*
+- Saxena et al. (2008). *C-MAPSS dataset*
 
 ---
 
-## 👩‍💻 Author
+## Authors
 
-Project developed by Ndao ML, Youness Genane, Niang N. and Saporta G.  
-Institution / Lab: CEDRIC/CESI  
-Date: 2025
-
----
-
-## Dataset Compatibility
-
-IDFC has been validated on the NASA **C-MAPSS** dataset (prognostics), but is suitable for:
-- Multivariate sensor time series
-- Genomics and omics data
-- Survey/psychometrics
-- Any high-dimensional tabular dataset
+Developed by  
+**M. L. Ndao**, G. Youness, N. Niang, G. Saporta  
+Affiliations: CESI LINEACT / CNAM-CEDRIC  
+Year: 2025
 
 ---
 
-## Citing this code
+## Citation
 
-If you use this package in a scientific publication, please cite the associated paper (link coming soon) and consider including this GitHub repository URL.
+If you use this code, please cite the associated paper and include a link to this repository:
+
+```
+@article{Ndao2025IDFC,
+  title={Explainable Remaining Useful Life Prediction Using an Interpretable Divisive Feature Clustering},
+  author={Ndao, Mouhamadou Lamine and Youness, Genane and Niang, Ndeye and Saporta, Gilbert},
+  journal={Applied Stochastic Models in Business and Industry},
+  year={2025}
+}
+```
 
 ---
 
 ## License
 
-This project is licensed under the MIT License – free to use, modify, and redistribute.
+This project is released under the MIT License.
